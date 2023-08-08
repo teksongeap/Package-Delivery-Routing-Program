@@ -1,1 +1,1 @@
-# WGU_C950_WGUPS
+# WGU C950 WGUPS Package Delivery Program

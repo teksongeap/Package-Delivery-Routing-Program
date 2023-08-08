@@ -1,5 +1,5 @@
 class Truck:
-    def __init__(self, truck_id, current_location="Hub"):
+    def __init__(self, truck_id, current_location="AtHub"):
         self.truck_id = truck_id
         self.packages = []
         self.current_location = current_location
