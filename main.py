@@ -8,8 +8,9 @@ from Truck import Truck
 
 
 # PACKAGE HANDLING
+# loud package data
 def load_package_data(hash_table):
-    with open('packageData.csv', 'r') as file:
+    with open('packageData.csv', 'r') as file:  # get from package data
         csv_reader = csv.reader(file, delimiter=',')
         for row in csv_reader:
             package = Package(int(row[0]), row[1], row[2], row[3], row[4], row[5], row[6], row[7])
@@ -21,6 +22,7 @@ load_package_data(package_hash_table)
 
 
 # ADDRESS HANDLING
+# load address data
 def load_address_data():
     with open('addressData.csv', 'r', encoding='utf-8-sig') as file:
         csv_reader = csv.reader(file, delimiter=',')
@@ -29,6 +31,7 @@ def load_address_data():
 
 
 # DISTANCE HANDLING
+# load distance data
 def load_distance_data():
     # Determine the size of the matrix
     with open('distanceData.csv', 'r', encoding='utf-8-sig') as file:
@@ -47,7 +50,7 @@ def load_distance_data():
                     distance_matrix[j][i] = float(value)
     return distance_matrix
 
-
+# get distance between two addresses within matrix
 def distance_between(from_address, to_address, addresses, distances):
     # Get the indices of the two addresses
     index1 = addresses.index(from_address)
@@ -116,7 +119,7 @@ def load_truck2(truck2, hash_table, loaded_package_ids):
 
 
 def load_truck3(truck3, hash_table, loaded_package_ids):
-    for i in range(1, 41):
+    for i in range(1, 41):  # load the rest of the packages leftover
         package = hash_table.lookup(i)
         if package.package_id not in loaded_package_ids and package.package_id != 9 and len(truck3.packages) < 16:
             truck3.add_package(package)
@@ -143,7 +146,7 @@ loaded_ids = load_truck3(truck3, package_hash_table, loaded_ids)
 # print(loaded_ids)
 # print(truck3.packages)
 
-# deliver the packages using greedy algorithm with complexity O(n^2)
+# deliver the packages using greedy algorithm with time complexity O(n^2)
 def deliver_packages(truck, addresses, distances):
     current_location = truck.current_location
     # Mark all packages on the truck as 'En route'
@@ -184,7 +187,6 @@ deliver_packages(truck2, address_list, distance_matrix)
 # The correct address for package 9 has magically appeared!
 if truck1.current_time >= datetime.strptime('10:20:00', '%H:%M:%S'):
     truck3.current_time = truck1.current_time
-    print(truck3.current_time)
     truck3.depart_time = truck1.current_time
     package = package_hash_table.lookup(9)
     package.address = '410 S State St'
@@ -193,7 +195,6 @@ if truck1.current_time >= datetime.strptime('10:20:00', '%H:%M:%S'):
     deliver_packages(truck3, address_list, distance_matrix)
 else:
     truck3.current_time = truck1.current_time
-    print(truck3.current_time)
     truck3.depart_time = truck1.current_time
     deliver_packages(truck3, address_list, distance_matrix)
 
