@@ -20,6 +20,7 @@ class HashTable:
         return None
 
     def hash(self, key):
-        # Compute a simple hash of the key
-        return key % self.size
+        prime_number = 37
+        hash_code = key * prime_number
+        return hash_code % self.size
 

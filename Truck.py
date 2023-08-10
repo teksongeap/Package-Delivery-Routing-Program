@@ -1,25 +1,31 @@
 class Truck:
-    def __init__(self, truck_id, current_location="AtHub"):
-        self.truck_id = truck_id
-        self.packages = []
-        self.current_location = current_location
-        self.total_distance = 0
+    def __init__(self, truck_id, speed, current_time, depart_time):
+        self.id = truck_id  # Truck's ID
+        self.speed = speed  # Average speed in miles per hour
+        self.current_location = '4001 South 700 East'  # The hub address
+        self.packages = []  # List of packages currently on the truck
+        self.all_packages = []
+        self.total_distance = 0  # Total distance traveled in miles
+        self.current_time = current_time  # Current time for this truck
+        self.depart_time = depart_time  # Departure time for this truck
 
-    def load_package(self, package):
+    def add_package(self, package):
+        # Add a package to the truck
         self.packages.append(package)
-        package.status = f"InRoute by Truck-{self.truck_id}"
+        self.all_packages.append(package)
 
-    def unload_package(self, package_id):
-        for package in self.packages:
-            if package.package_id == package_id:
-                self.packages.remove(package)
-                package.status = "Delivered by Truck-" + self.truck_id
-                return True
-        return False
+    def deliver_package(self, package):
+        # Remove a package from the truck
+        self.packages.remove(package)
 
-    def deliver_packages(self):
-        for package in self.packages[:]:
-            self.unload_package(package.package_id)
+    def update_location(self, new_location):
+        self.current_location = new_location
+
+    def add_distance(self, distance):
+        self.total_distance += distance
 
     def __str__(self):
-        return f"Truck-{self.truck_id}, Packages: {[pkg.package_id for pkg in self.packages]}, Distance: {self.total_distance} miles"
+        return (f'Truck {self.id}\n'
+                f'Current location: {self.current_location}\n'
+                f'Total distance traveled: {self.total_distance} miles\n'
+                f'Packages: {[str(package) for package in self.packages]}')
