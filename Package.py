@@ -8,7 +8,7 @@ class Package:
         self.delivery_deadline = delivery_deadline
         self.weight_kilo = weight_kilo
         self.special_notes = special_notes
-        self.status = "AtHub"  # Default status
+        self.status = "At Hub"  # Default status
         self.depart_time = None  # Default depart time
         self.delivery_time = None  # Default delivery time
 
