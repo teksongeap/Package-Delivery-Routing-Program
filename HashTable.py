@@ -19,6 +19,7 @@ class HashTable:
         # If the key is not found, return None
         return None
 
+
     def hash(self, key):
         prime_number = 37
         hash_code = key * prime_number

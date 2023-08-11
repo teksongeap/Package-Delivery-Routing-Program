@@ -13,8 +13,16 @@ def load_package_data(hash_table):
     with open('packageData.csv', 'r') as file:  # get from package data
         csv_reader = csv.reader(file, delimiter=',')
         for row in csv_reader:
-            # create new package object
-            package = Package(int(row[0]), row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+            package_id = int(row[0])
+            address = row[1]
+            city = row[2]
+            state = row[3]
+            zip_code = row[4]
+            deadline = row[5]
+            kilo = row[6]
+            notes = row[7]
+            # create new package object with ALL data points
+            package = Package(package_id, address, city, state, zip_code, deadline, kilo, notes)
             hash_table.insert(package.package_id, package)
 
 
@@ -76,32 +84,6 @@ def load_truck1(truck1, hash_table):
         package = hash_table.lookup(i)
         truck1.add_package(package)
 
-    # together_packages = [[13, 15, 19]]
-    #
-    # for i in range(1, 41):
-    #     package = hash_table.lookup(i)
-    #     if "Can only be on truck 2" not in package.special_notes and \
-    #             "Delayed on flight" not in package.special_notes and \
-    #             "Wrong address listed" not in package.special_notes:
-    #         # Check for packages that must be delivered together
-    #         for group in together_packages:
-    #             if package.package_id in group:
-    #                 all_present = all([hash_table.lookup(pkg_id) for pkg_id in group])
-    #                 if all_present:
-    #                     for pkg_id in group:
-    #                         if len(truck1.packages) < 16:
-    #                             truck1.add_package(hash_table.lookup(pkg_id))
-    #                             loaded_package_ids.add(pkg_id)
-    #         else:
-    #             if package.package_id not in loaded_package_ids and len(truck1.packages) < 16:
-    #                 truck1.add_package(package)
-    #                 loaded_package_ids.add(package.package_id)
-    #
-    # loaded_package_ids.add(39)
-    # loaded_package_ids.add(20)
-
-    # return loaded_package_ids
-
 
 # load truck 2 manually
 def load_truck2(truck2, hash_table):
@@ -110,41 +92,13 @@ def load_truck2(truck2, hash_table):
         package = hash_table.lookup(i)
         truck2.add_package(package)
 
-    # together_packages = [[13, 15, 19]]
-    #
-    # for i in range(1, 41):
-    #     package = hash_table.lookup(i)
-    #     if package.package_id not in loaded_package_ids:
-    #         if "Can only be on truck 2" in package.special_notes or "Delayed on flight" in package.special_notes:
-    #             truck2.add_package(package)
-    #             loaded_package_ids.add(package.package_id)
-    #
-    #         # Check for packages that must be delivered together
-    #         for group in together_packages:
-    #             if package.package_id in group and all([pkg_id not in loaded_package_ids for pkg_id in group]):
-    #                 for pkg_id in group:
-    #                     if len(truck2.packages) < 16:
-    #                         truck2.add_package(hash_table.lookup(pkg_id))
-    #                         loaded_package_ids.add(pkg_id)
-    #
-    # loaded_package_ids.add(40)
-    # return loaded_package_ids
-
 
 # load truck 3 manually
 def load_truck3(truck3, hash_table):
-    packages_to_load = [8, 9, 22, 23, 24, 26, 27, 33]
+    packages_to_load = [8, 22, 23, 24, 26, 27, 33]
     for i in packages_to_load:
         package = hash_table.lookup(i)
         truck3.add_package(package)
-
-    # for i in range(1, 41):  # load the rest of the packages leftover
-    #     package = hash_table.lookup(i)
-    #     if package.package_id not in loaded_package_ids and package.package_id != 9 and len(truck3.packages) < 16:
-    #         truck3.add_package(package)
-    #         loaded_package_ids.add(package.package_id)
-    #
-    # return loaded_package_ids
 
 
 start_time = datetime.strptime('08:00:00', '%H:%M:%S')  # Example start time
@@ -200,17 +154,12 @@ deliver_packages(truck2, address_list, distance_matrix)
 # print(truck2.total_distance)
 
 # The correct address for package 9 has magically appeared!
-if truck1.current_time >= datetime.strptime('10:20:00', '%H:%M:%S'):
-    truck3.current_time = truck1.current_time
-    truck3.depart_time = truck1.current_time
-    package = package_hash_table.lookup(9)
-    package.address = '410 S State St'
-    truck3.add_package(package)
-    deliver_packages(truck3, address_list, distance_matrix)
-else:
-    truck3.current_time = truck1.current_time
-    truck3.depart_time = truck1.current_time
-    deliver_packages(truck3, address_list, distance_matrix)
+truck3.current_time = datetime.strptime('10:20:00', '%H:%M:%S')
+truck3.depart_time = datetime.strptime('10:20:00', '%H:%M:%S')
+package = package_hash_table.lookup(9)
+package.address = '410 S State St'
+truck3.add_package(package)
+deliver_packages(truck3, address_list, distance_matrix)
 
 
 # Command line interface options and such
@@ -235,7 +184,10 @@ def show_all_packages_status_for_time(time, trucks):
             # Check if package has id of 9
             if package.package_id == 9 and datetime.strptime('10:20:00', '%H:%M:%S') > time_obj:
                 print(
-                    f"Package ID: {package.package_id}, Address: 300 State St (wrong address), Status: {package_status} at {status_time_str}, Address will be corrected at 10:20 AM")
+                    f"Package ID: {package.package_id}, Address: 300 State St (wrong address), "
+                    f"City: {package.city}, Zipcode: {package.zip_code}, Deadline: {package.delivery_deadline}, "
+                    f"Weight: {package.weight_kilo}, Status: {package_status} at {status_time_str}, \n"
+                    f"Address for Package ID: {package.package_id} will be corrected at 10:20 AM")
             else:
                 # Check if the truck has not yet departed and or package delayed
                 if time_obj < truck.depart_time and "Delayed" in package.special_notes:
@@ -249,7 +201,9 @@ def show_all_packages_status_for_time(time, trucks):
                     elif package.delivery_time and datetime.strptime(package.delivery_time, '%H:%M:%S') > time_obj:
                         package_status = "En route"  # Show en route if time is before delivery time
                 print(
-                    f"Package ID: {package.package_id}, Address: {package.address}, Status: {package_status} at {status_time_str}")
+                    f"Package ID: {package.package_id}, Address: {package.address}, City: {package.city}, "
+                    f"Zipcode: {package.zip_code}, Deadline: {package.delivery_deadline}, "
+                    f"Weight: {package.weight_kilo}, Status: {package_status} at {status_time_str}")
 
 
 # shows single package status with time info according to specified time (simulated)
@@ -266,7 +220,10 @@ def get_single_package_status(package_id, time, trucks):
                 # Check if the truck has not yet departed and or package delayed
                 if package.package_id == 9 and datetime.strptime('10:20:00', '%H:%M:%S') > time_obj:
                     print(
-                        f"Package ID: {package.package_id}, Address: 300 State St (wrong address), Status: {package_status} at {status_time_str}, Address will be corrected at 10:20 AM")
+                        f"Package ID: {package.package_id}, Address: 300 State St (wrong address), "
+                        f"City: {package.city}, Zipcode: {package.zip_code}, Deadline: {package.delivery_deadline}, "
+                        f"Weight: {package.weight_kilo}, Status: {package_status} at {status_time_str}, \n"
+                        f"Address for Package ID: {package.package_id} will be corrected at 10:20 AM")
                 else:
                     # Check if the truck has not yet departed and or package delayed
                     if time_obj < truck.depart_time and "Delayed" in package.special_notes:
@@ -280,7 +237,9 @@ def get_single_package_status(package_id, time, trucks):
                         elif package.delivery_time and datetime.strptime(package.delivery_time, '%H:%M:%S') > time_obj:
                             package_status = "En route"  # Show en route if time is before delivery time
                     print(
-                        f"Package ID: {package.package_id}, Address: {package.address}, Status: {package_status} at {status_time_str}")
+                        f"Package ID: {package.package_id}, Address: {package.address}, City: {package.city}, "
+                        f"Zipcode: {package.zip_code}, Deadline: {package.delivery_deadline}, "
+                        f"Weight: {package.weight_kilo}, Status: {package_status} at {status_time_str}")
     #  prints package not found if no package ID is found
     if package_found == 0:
         print("Package not found")
@@ -296,7 +255,9 @@ def show_total_mileage(trucks):
         for package in truck.all_packages:
             if package.delivery_time and datetime.strptime(package.delivery_time, '%H:%M:%S') <= time_obj:
                 print(
-                    f"Package ID: {package.package_id}, Address: {package.address}, Status: Delivered at {package.delivery_time}")
+                    f"Package ID: {package.package_id}, Address: {package.address}, "
+                    f"City: {package.city}, Zipcode: {package.zip_code}, Deadline: {package.delivery_deadline}, "
+                    f"Weight: {package.weight_kilo}, Status: Delivered at {package.delivery_time}")
 
 
 def main():
